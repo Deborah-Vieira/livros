@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import Livros from "./Livros";
 import { DebounceInput } from "react-debounce-input";
 
-
-
 class SearchBook extends Component {
   state = {
     query: "",
@@ -14,25 +12,29 @@ class SearchBook extends Component {
 
   //metodo de atualização do campo input
   //passando um paramentro query
-  updateQuery = query => {
+  updateQuery = (query, livrosAtuais) => {
     const texto = query.trim();
     this.setState({ query: texto });
-    buscaLivros(texto).then(res => this.setState({ resultadoBuscaLivros: res })
-    );
-
-    // console.log(texto); //esse texto pega o que digitei no campo de busca apenas.
+    buscaLivros(texto).then(resultado => {
+      //o resultado do texto digitado que é o livro
+      /**Aqui onde armazeno o array de resultado de livros, filtro com o map e faço uma comparação
+       * para saber se existe livros, se exister livro com prateleira, caso contrario o sete como none
+       */
+      const livrosFiltrados = resultado.map(livro => {
+        const livroNaPrateleira = livrosAtuais.find(
+          livroAtual => livro.id === livroAtual.id
+        );
+        livroNaPrateleira
+          ? (livro.shelf = livroNaPrateleira.shelf)
+          : (livro.shelf = "none");
+        return livro;
+      });
+      this.setState({ resultadoBuscaLivros: livrosFiltrados });
+    });
   };
 
-
   render() {
-
-    let listaLivros = this.state.resultadoBuscaLivros;
-    const LivrosFiltrados = listaLivros.filter(Livro => Livro.id === Livro.id)
-    listaLivros.shelf = LivrosFiltrados ? LivrosFiltrados : 'none'
-    console.log(listaLivros);
-
-
-
+    let livrosFiltrados = this.state.resultadoBuscaLivros;
 
     return (
       <div className="search-books">
@@ -43,14 +45,19 @@ class SearchBook extends Component {
           <DebounceInput
             minLength={3}
             debounceTimeout={300}
-            onChange={event => this.updateQuery(event.target.value)}
+            onChange={event =>
+              this.updateQuery(event.target.value, this.props.books)
+            }
             value={this.state.query}
             placeholder="Search for book or author..."
           />
         </div>
         <div className="search-books-results">
-          {listaLivros != null ? (
-            <Livros books={listaLivros} updateBook={this.props.updateBook} />
+          {livrosFiltrados != null ? (
+            <Livros
+              books={livrosFiltrados}
+              updateBook={this.props.updateBook}
+            />
           ) : null}
         </div>
       </div>
@@ -58,6 +65,3 @@ class SearchBook extends Component {
   }
 }
 export default SearchBook;
-
-
-

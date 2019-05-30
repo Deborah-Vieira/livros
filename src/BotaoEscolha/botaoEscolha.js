@@ -10,7 +10,8 @@ class BotaoEscolha extends Component {
     const { book, updateBook } = this.props; //desconstrução
     return (
       <div className="book-shelf-changer">
-        <select value={book.shelf != null ? book.shelf : "none"} onChange={e => updateBook(book, e.target.value)}>
+        <select value={book.shelf != null ? book.shelf : "none"}
+          onChange={e => updateBook(book, e.target.value)}>
           <option value="Move to" disabled>Move to</option>
           <option value="currentlyReading">Currently Reading</option>
           <option value="wantToRead">Want to Read</option>
@@ -23,6 +24,3 @@ class BotaoEscolha extends Component {
 }
 export default BotaoEscolha;
 
-/**
- *  <select value={book.shelf != null ? book.shelf : "none"} onChange={e => updateBook(book, e.target.value)}>
- */
